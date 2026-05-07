@@ -1,3 +1,4 @@
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 sqlite-vec>=0.1
 tree-sitter>=0.23
 tree-sitter-python>=0.23

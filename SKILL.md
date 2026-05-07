@@ -1,24 +1,66 @@
 ---
-name: knowledge-base-crud
-description: 로컬 SQLite 벡터 데이터베이스(Knowledge Base)를 관리하는 스킬입니다. 코드를 학습시키거나 지식을 검색, 갱신, 삭제해야 할 때 호출하세요.
+name: knowledge-base
+description: "Manages a local SQLite vector database (Knowledge Base). Use this skill to index code, search for knowledge, update, or delete existing entries."
 ---
 
-# Knowledge Base CRUD 연산 가이드
+# Knowledge Base CRUD Operations Guide
 
-사용자가 특정 지식을 DB에 등록/수정/삭제하거나 조회하라고 지시할 경우, 아래의 절차에 따라 작업을 수행하세요. 모든 작업은 파이썬 스크립트를 통해 시스템 내부 데이터베이스 파일을 조작하여 이루어집니다.
+When a user instructs you to register, update, delete, or query knowledge in the database, follow these procedures. All operations are performed by executing internal Python scripts that manipulate the SQLite database files.
 
-## 1. Create (등록)
-- 지시받은 코드 파일이나 문서를 읽고 `tree-sitter`로 함수/클래스 단위로 분리합니다.
-- `llama-cpp-python` 기반 임베딩 스크립트를 호출하여 각 단위의 벡터를 추출합니다.
-- 메타데이터(파일 경로, 타입)와 추출된 벡터를 SQLite 트랜잭션으로 안전하게 삽입(INSERT)합니다.
+## 1. Create (Index)
+- Read the specified code files or documents and parse them into function/class units using `tree-sitter`.
+- Execute the embedding script (based on `llama-cpp-python`) to extract vector representations for each unit.
+- Perform a secure SQLite transaction to `INSERT` the extracted vectors along with metadata (e.g., file path, type).
 
-## 2. Read (조회/검색)
-- 사용자가 질문한 내용이나 검색 쿼리를 임베딩 스크립트로 변환합니다.
-- DB에서 코사인 유사도가 가장 높은 상위 문서 5개를 조회(SELECT)하여 컨텍스트로 활용합니다.
+## 2. Search (Retrieve)
+- Convert the user's question or search query into an embedding using the embedding script.
+- `SELECT` the top 5 documents from the database with the highest cosine similarity to use as context for the model.
 
-## 3. Update (수정)
-- 지식이 갱신된 파일의 경로를 기준으로, 먼저 Delete 작업을 수행하여 이전 버전의 벡터 데이터를 모두 삭제합니다.
-- 그런 다음 새로운 내용으로 Create 연산을 다시 실행합니다.
+## 3. Update (Refresh)
+- Based on the file path where the knowledge has been updated, first perform the **Delete** operation to remove all previous vector data.
+- Subsequently, re-run the **Create** operation with the new content to ensure the database is up to date.
 
-## 4. Delete (삭제)
-- 사용자가 삭제를 명시한 파일이나 경로를 기준으로, DB 내 일치하는 레코드에 대해 DELETE 쿼리를 실행합니다.
+## 4. Delete (Remove)
+- Based on the file or directory path specified by the user for removal, execute a `DELETE` query against the corresponding records in the database.
+
+## Usage Examples
+
+Always use the isolated venv Python interpreter. Base path: `~/.pi/skills/knowledge-base/`
+
+### Init Database (One-time setup)
+```bash
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/init_db.py
+```
+
+### Create (Index a file)
+```bash
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/create.py <FILE_PATH>
+# Example:
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/create.py /home/ash/Documents/dev/test_web/src/main.ts
+```
+
+### Search (Retrieve)
+```bash
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/search.py <QUERY> [--top-k N]
+# Example:
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/search.py "authentication logic" --top-k 5
+```
+
+### Update (Refresh a file)
+```bash
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/update.py <FILE_PATH>
+# Example:
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/update.py /home/ash/Documents/dev/test_web/src/main.ts
+```
+
+### Delete (Remove by file or directory)
+```bash
+# Single file:
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/delete.py /home/ash/Documents/dev/test_web/src/main.ts
+
+# Whole directory:
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/delete.py /home/ash/Documents/dev/test_web/src/
+
+# Glob pattern:
+~/.pi/skills/knowledge-base/.venv/bin/python ~/.pi/skills/knowledge-base/scripts/delete.py . --pattern "*.test.js"
+```

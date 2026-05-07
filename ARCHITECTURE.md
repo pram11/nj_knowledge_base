@@ -14,7 +14,7 @@ knowledge-base/              # 스킬 루트 디렉토리 (배포/복사 시 이
 └── scripts/                 # 에이전트가 터미널에서 직접 실행할 액션 스크립트
     ├── init_db.py           # [초기화] DB 폴더 생성 및 sqlite-vec 테이블 셋업
     ├── create.py            # [C] 인자: <file_path> | 파싱, 임베딩, DB 삽입
-    ├── read.py              # [R] 인자: <query> | 쿼리 임베딩 및 하이브리드 검색
+    ├── search.py            # [R] 인자: <query> | 쿼리 임베딩 및 하이브리드 검색
     ├── update.py            # [U] 인자: <file_path> | 기존 청크 삭제 후 재생성
     ├── delete.py            # [D] 인자: <file_path> | 특정 파일/경로의 데이터 삭제
     └── core/                # 공통 모듈 (DRY 원칙 준수)
@@ -38,7 +38,7 @@ knowledge-base/              # 스킬 루트 디렉토리 (배포/복사 시 이
     *   **DB 파일 절대 경로**: `~/.pi/agent-memory/knowledge.db` (사용자 홈 디렉토리 하위의 고정된 위치를 사용합니다.)
 2.  **CRUD 실행 인터페이스 (Execution Interface)**
     *   에이전트가 파이썬 코드를 즉석에서 작성하여 실행하는 방식을 엄격히 배제합니다.
-    *   반드시 `scripts/` 폴더 내에 사전 구현된 파이썬 스크립트에 터미널 파라미터를 넘겨 실행(예: `python scripts/read.py "검색어"`)하는 방식을 표준으로 채택합니다.
+    *   반드시 `scripts/` 폴더 내에 사전 구현된 파이썬 스크립트에 터미널 파라미터를 넘겨 실행(예: `python scripts/search.py "검색어"`)하는 방식을 표준으로 채택합니다.
 3.  **임베딩 모델 관리: 자동 다운로드 (Auto-Download)**
     *   로컬 임베딩 연산을 위해 가벼운 GGUF 모델(예: Nomic-embed-text)을 사용합니다.
     *   `scripts/core/embedder.py` 또는 `init_db.py` 실행 시, 스킬 내 `models/` 폴더에 지정된 모델 파일이 존재하는지 검사합니다.

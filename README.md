@@ -10,7 +10,7 @@ python scripts/init_db.py
 
 # CRUD
 python scripts/create.py <file_path>
-python scripts/read.py "<query>"
+python scripts/search.py "<query>"
 python scripts/update.py <file_path>
 python scripts/delete.py <file_path>
 ```
