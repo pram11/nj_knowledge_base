@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 *.pyo
+*.egg-info/
+dist/
+build/
 .venv/
 
 # Models (large GGUF files)
@@ -14,3 +17,7 @@ models/*.gguf
 # IDE
 .vscode/
 .idea/
+
+# OS
+.DS_Store
+Thumbs.db
