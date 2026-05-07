@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+
+# Models (large GGUF files)
+models/*.gguf
+
+# DB (generated)
+*.db
+.pi/agent-memory/
+
+# IDE
+.vscode/
+.idea/

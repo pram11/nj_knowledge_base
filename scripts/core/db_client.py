@@ -2,14 +2,16 @@ import sqlite3
 from pathlib import Path
 from typing import Optional
 
-DB_DIR = Path(".pi")
+import sqlite_vec
+
+DB_DIR = Path.home() / ".pi" / "agent-memory"
 DB_PATH = DB_DIR / "knowledge.db"
 
 def get_connection(db_path: Optional[Path] = None) -> sqlite3.Connection:
     target = db_path or DB_PATH
     target.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(target))
-    conn.execute("SELECT load_extension('sqlite_vec');")
+    sqlite_vec.load(conn)
     conn.row_factory = sqlite3.Row
     return conn
 
