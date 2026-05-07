@@ -1,0 +1,4 @@
+sqlite-vec
+tree-sitter
+tree-sitter-languages
+llama-cpp-python
